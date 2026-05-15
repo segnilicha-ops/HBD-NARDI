@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Happy Birthday, Nardi! 🎂</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --pink: #f472b6;
+    --purple: #a855f7;
+    --gold: #ffe066;
+    --soft: #fde68a;
+    --bg1: #1a0533;
+    --bg2: #2d0845;
+    --bg3: #0a1a3d;
+    --glass: rgba(255,255,255,0.07);
+    --glass-border: rgba(255,255,255,0.15);
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    min-height: 100vh;
+    background: linear-gradient(135deg, var(--bg2) 0%, var(--bg1) 45%, var(--bg3) 100%);
+    font-family: 'DM Sans', sans-serif;
+    color: #fff;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  /* Stars */
+  #stars { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+  .star {
+    position: absolute; background: #fff; border-radius: 50%;
+    animation: twinkle var(--d, 2s) infinite alternate;
+  }
+  @keyframes twinkle {
+    from { opacity: 0.15; transform: scale(1); }
+    to   { opacity: 1;    transform: scale(1.6); }
+  }
+
+  /* Confetti canvas */
+  #confetti-canvas {
+    position: fixed; inset: 0; z-index: 100;
+    pointer-events: none; width: 100%; height: 100%;
+  }
+
+  /* Layout */
+  .page {
+    position: relative; z-index: 1;
+    max-width: 480px; margin: 0 auto;
+    padding: 0 0 60px;
+    display: flex; flex-direction: column; align-items: center;
+    text-align: center;
+  }
+
+  /* Banner */
+  .top-banner {
+    width: 100%;
+    background: linear-gradient(90deg, var(--pink), var(--purple), var(--gold), var(--purple), var(--pink));
+    background-size: 200%;
+    animation: rainbow 3s linear infinite;
+    padding: 11px 16px;
+    font-size: 13px; font-weight: 500;
+    letter-spacing: 2.5px; text-transform: uppercase;
+    color: #fff; text-shadow: 0 1px 4px #0005;
+  }
+  @keyframes rainbow {
+    from { background-position: 0%; }
+    to   { background-position: 200%; }
+  }
+
+  /* Cake */
+  .cake-wrap { margin-top: 32px; position: relative; }
+  .flame { animation: flicker 0.45s ease-in-out infinite alternate; transform-origin: 50% 100%; }
+  @keyframes flicker {
+    from { transform: scaleX(1) scaleY(1) rotate(-4deg); }
+    to   { transform: scaleX(0.8) scaleY(1.2) rotate(4deg); }
+  }
+
+  /* Name */
+  .name-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(28px, 8vw, 42px);
+    font-weight: 700;
+    color: var(--gold);
+    letter-spacing: 1px;
+    margin-top: 16px;
+    text-shadow: 0 0 30px #ffb30077;
+    animation: glow 2.5s ease-in-out infinite alternate;
+  }
+  @keyframes glow {
+    from { text-shadow: 0 0 20px #ffb30055; }
+    to   { text-shadow: 0 0 40px #ffb300bb, 0 0 70px #f472b644; }
+  }
+  .sub-title {
+    font-size: 15px; color: #e9d5ff;
+    margin-top: 6px; letter-spacing: 0.5px;
+    font-style: italic;
+  }
+
+  /* Main wish */
+  .big-wish {
+    width: calc(100% - 32px);
+    margin: 24px auto 0;
+    background: rgba(255,230,102,0.08);
+    border: 0.5px solid rgba(255,230,102,0.3);
+    border-radius: 16px;
+    padding: 20px 18px;
+    color: var(--soft);
+    font-size: 15px;
+    line-height: 1.8;
+    font-style: italic;
+    font-family: 'Playfair Display', serif;
+  }
+
+  /* Wish cards */
+  .wish-cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    width: calc(100% - 32px);
+    margin: 20px auto 0;
+  }
+  .wish-card {
+    background: var(--glass);
+    border: 0.5px solid var(--glass-border);
+    border-radius: 14px;
+    padding: 16px 12px;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.15s;
+    -webkit-tap-highlight-color: transparent;
+    min-height: 90px;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+  }
+  .wish-card:active { background: rgba(255,255,255,0.14); transform: scale(0.96); }
+  .wish-card .icon { font-size: 24px; margin-bottom: 6px; }
+  .wish-card .label { font-size: 11px; color: #d8b4fe; letter-spacing: 0.5px; }
+  .wish-card .text { font-size: 12px; color: #fff; line-height: 1.55; display: none; }
+  .wish-card.open .text { display: block; }
+  .wish-card.open .label { display: none; }
+
+  /* Gift button */
+  .gift-btn {
+    margin-top: 28px;
+    background: linear-gradient(90deg, var(--pink), var(--purple));
+    color: #fff; border: none;
+    border-radius: 50px;
+    padding: 15px 40px;
+    font-size: 16px; font-weight: 500;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.2s;
+    box-shadow: 0 6px 28px rgba(168,85,247,0.45);
+    -webkit-tap-highlight-color: transparent;
+    letter-spacing: 0.5px;
+  }
+  .gift-btn:hover { box-shadow: 0 8px 36px rgba(244,114,182,0.55); transform: translateY(-2px); }
+  .gift-btn:active { transform: scale(0.96) translateY(0); }
+
+  /* Gift modal overlay */
+  .gift-overlay {
+    position: fixed; inset: 0; z-index: 200;
+    background: rgba(10,5,30,0.92);
+    display: none;
+    flex-direction: column;
+    align-items: center; justify-content: center;
+    padding: 32px 24px;
+    text-align: center;
+  }
+  .gift-overlay.show { display: flex; }
+
+  .gift-box-anim {
+    font-size: 80px;
+    animation: bounce 0.65s ease-in-out infinite alternate;
+    margin-bottom: 20px;
+  }
+  @keyframes bounce {
+    from { transform: translateY(0) rotate(-3deg); }
+    to   { transform: translateY(-16px) rotate(3deg); }
+  }
+
+  .gift-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px; font-weight: 700;
+    color: var(--gold);
+    margin-bottom: 16px;
+    text-shadow: 0 0 20px #ffb30066;
+  }
+  .gift-message {
+    font-size: 15px; color: #fde68a;
+    max-width: 320px; line-height: 1.85;
+    margin-bottom: 28px;
+    font-style: italic;
+    font-family: 'Playfair Display', serif;
+  }
+  .gift-hearts {
+    font-size: 28px; letter-spacing: 8px;
+    margin-bottom: 24px;
+    animation: pulse 1.2s ease-in-out infinite alternate;
+  }
+  @keyframes pulse {
+    from { transform: scale(1); }
+    to   { transform: scale(1.15); }
+  }
+  .gift-close {
+    background: rgba(255,255,255,0.1);
+    border: 0.5px solid rgba(255,255,255,0.25);
+    border-radius: 50px; color: #fff;
+    padding: 13px 36px; font-size: 15px;
+    cursor: pointer; font-family: 'DM Sans', sans-serif;
+    transition: background 0.2s;
+  }
+  .gift-close:hover { background: rgba(255,255,255,0.18); }
+
+  /* Floating hearts */
+  .floater {
+    position: fixed; z-index: 50;
+    pointer-events: none;
+    font-size: 20px;
+    animation: float-up 3s ease-out forwards;
+  }
+  @keyframes float-up {
+    0%   { opacity: 1; transform: translateY(0) scale(1) rotate(0deg); }
+    100% { opacity: 0; transform: translateY(-200px) scale(0.5) rotate(20deg); }
+  }
+
+  /* Footer */
+  .footer {
+    margin-top: 40px;
+    font-size: 12px; color: rgba(255,255,255,0.3);
+    letter-spacing: 1px;
+  }
+</style>
+</head>
+<body>
+
+<div id="stars"></div>
+<canvas id="confetti-canvas"></canvas>
+
+<div class="page">
+  <div class="top-banner">✨ &nbsp; Happy Birthday, Nardi! &nbsp; ✨</div>
+
+  <div class="cake-wrap">
+    <svg width="160" height="135" viewBox="0 0 160 135" role="img" xmlns="http://www.w3.org/2000/svg">
+      <title>Birthday cake for Nardi</title>
+      <rect x="16" y="80" width="128" height="44" rx="12" fill="#f472b6"/>
+      <rect x="16" y="80" width="128" height="18" rx="6" fill="#ec4899"/>
+      <rect x="24" y="64" width="112" height="24" rx="8" fill="#c084fc"/>
+      <rect x="34" y="50" width="92" height="20" rx="7" fill="#9333ea"/>
+      <rect x="26" y="114" width="108" height="10" rx="5" fill="#db2777"/>
+      <ellipse cx="56" cy="80" rx="13" ry="6" fill="#f9a8d4" opacity="0.65"/>
+      <ellipse cx="104" cy="80" rx="13" ry="6" fill="#f9a8d4" opacity="0.65"/>
+      <rect x="53" y="32" width="6" height="20" rx="3" fill="#fde68a"/>
+      <rect x="101" y="32" width="6" height="20" rx="3" fill="#fde68a"/>
+      <g class="flame"><ellipse cx="56" cy="28" rx="5" ry="8" fill="#ffee44" opacity="0.95"/></g>
+      <g class="flame" style="animation-delay:0.3s"><ellipse cx="104" cy="28" rx="5" ry="8" fill="#ffee44" opacity="0.95"/></g>
+      <circle cx="48" cy="97" r="4" fill="#fff" opacity="0.2"/>
+      <circle cx="80" cy="92" r="3.5" fill="#fff" opacity="0.18"/>
+      <circle cx="112" cy="97" r="4" fill="#fff" opacity="0.2"/>
+    </svg>
+  </div>
+
+  <div class="name-title">🌸 Happy Birthday, Nardi! 🌸</div>
+  <div class="sub-title">Today the whole universe celebrates you</div>
+
+  <div class="big-wish">
+    "Nardi, you are a rare kind of light — warm, brilliant, and impossible to forget. May this birthday be the beginning of your most beautiful chapter yet. You deserve every dream, every smile, and every magical moment."
+  </div>
+
+  <div class="wish-cards">
+    <div class="wish-card" onclick="revealWish(this)">
+      <span class="icon">🌸</span>
+      <div class="label">Tap for a wish</div>
+      <div class="text">Nardi, may you always bloom where you're planted — bold, radiant, and unapologetically you.</div>
+    </div>
+    <div class="wish-card" onclick="revealWish(this)">
+      <span class="icon">💖</span>
+      <div class="label">Tap for a wish</div>
+      <div class="text">You deserve every ounce of love the world has to offer — starting with this birthday celebration!</div>
+    </div>
+    <div class="wish-card" onclick="revealWish(this)">
+      <span class="icon">👑</span>
+      <div class="label">Tap for a wish</div>
+      <div class="text">Queen energy, always. Nardi, you were born to shine — don't ever dim your light for anyone.</div>
+    </div>
+    <div class="wish-card" onclick="revealWish(this)">
+      <span class="icon">✨</span>
+      <div class="label">Tap for a wish</div>
+      <div class="text">May every day that follows this one be better than the last. Your story is just getting started!</div>
+    </div>
+  </div>
+
+  <button class="gift-btn" onclick="openGift()">🎁 Open Your Special Gift, Nardi</button>
+
+  <div class="footer">Made with 💗 just for Nardi</div>
+</div>
+
+<!-- Gift Modal -->
+<div class="gift-overlay" id="gift-overlay">
+  <div class="gift-box-anim">🎁</div>
+  <div class="gift-title">A Gift for Nardi 💝</div>
+  <div class="gift-hearts">💖 🌸 💫</div>
+  <div class="gift-message">
+    "Nardi, my gift to you is simple but from the heart — may you always know how deeply loved you are, how brightly you shine in people's lives, and how much the world is better with you in it. Keep being your amazing self. Happy Birthday, beautiful!"
+  </div>
+  <button class="gift-close" onclick="closeGift()">💗 Thank you so much!</button>
+</div>
+
+<script>
+(function(){
+  // Stars
+  const starsEl = document.getElementById('stars');
+  for(let i=0;i<50;i++){
+    const s=document.createElement('div');
+    s.className='star';
+    const sz=Math.random()*2.8+0.8;
+    s.style.cssText=`width:${sz}px;height:${sz}px;top:${Math.random()*100}%;left:${Math.random()*100}%;--d:${1.2+Math.random()*2}s;animation-delay:${Math.random()*3}s`;
+    starsEl.appendChild(s);
+  }
+
+  // Confetti
+  const canvas=document.getElementById('confetti-canvas');
+  const ctx=canvas.getContext('2d');
+  let particles=[];
+
+  function resize(){
+    canvas.width=window.innerWidth;
+    canvas.height=window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize',resize);
+
+  const COLORS=['#ffe066','#f472b6','#a855f7','#38bdf8','#34d399','#fb923c','#fde68a','#c084fc','#ff6ec7'];
+
+  function spawnBurst(n,cx,cy){
+    cx=cx||window.innerWidth*0.5;
+    cy=cy||window.innerHeight*0.15;
+    for(let i=0;i<n;i++){
+      particles.push({
+        x:cx+(Math.random()-0.5)*60,
+        y:cy,
+        vx:(Math.random()-0.5)*10,
+        vy:Math.random()*-11-3,
+        color:COLORS[Math.floor(Math.random()*COLORS.length)],
+        size:4+Math.random()*7,
+        rot:Math.random()*360,
+        rotV:(Math.random()-0.5)*10,
+        shape:Math.random()>0.45?'rect':'circle',
+        alpha:1,life:0
+      });
+    }
+  }
+
+  function drawLoop(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    particles=particles.filter(p=>p.alpha>0.02);
+    particles.forEach(p=>{
+      p.x+=p.vx; p.y+=p.vy; p.vy+=0.2; p.vx*=0.98;
+      p.rot+=p.rotV; p.life++;
+      if(p.life>60) p.alpha-=0.014;
+      ctx.save();
+      ctx.globalAlpha=p.alpha;
+      ctx.translate(p.x,p.y);
+      ctx.rotate(p.rot*Math.PI/180);
+      ctx.fillStyle=p.color;
+      if(p.shape==='rect'){ctx.fillRect(-p.size/2,-p.size/4,p.size,p.size/2);}
+      else{ctx.beginPath();ctx.arc(0,0,p.size/2,0,Math.PI*2);ctx.fill();}
+      ctx.restore();
+    });
+    requestAnimationFrame(drawLoop);
+  }
+  drawLoop();
+
+  // Initial burst
+  spawnBurst(110); setTimeout(()=>spawnBurst(80),700); setTimeout(()=>spawnBurst(60),1400);
+
+  // Floating hearts
+  function spawnHeart(x,y){
+    const el=document.createElement('div');
+    el.className='floater';
+    const hearts=['💖','🌸','✨','💫','💗','👑'];
+    el.textContent=hearts[Math.floor(Math.random()*hearts.length)];
+    el.style.left=(x||Math.random()*window.innerWidth)+'px';
+    el.style.top=(y||window.innerHeight*0.7)+'px';
+    document.body.appendChild(el);
+    setTimeout(()=>el.remove(),3000);
+  }
+  setInterval(()=>spawnHeart(),1800);
+
+  window.revealWish=function(el){
+    el.classList.toggle('open');
+    if(el.classList.contains('open')){
+      spawnBurst(28,el.getBoundingClientRect().left+el.offsetWidth/2,el.getBoundingClientRect().top);
+      spawnHeart(el.getBoundingClientRect().left+40,el.getBoundingClientRect().top);
+    }
+  };
+
+  window.openGift=function(){
+    document.getElementById('gift-overlay').classList.add('show');
+    spawnBurst(150,window.innerWidth/2,window.innerHeight/2);
+    setTimeout(()=>spawnBurst(100,window.innerWidth/2,window.innerHeight/2),500);
+    setTimeout(()=>spawnBurst(80,window.innerWidth/2,window.innerHeight/2),1000);
+    for(let i=0;i<6;i++) setTimeout(()=>spawnHeart(Math.random()*window.innerWidth),i*300);
+  };
+
+  window.closeGift=function(){
+    document.getElementById('gift-overlay').classList.remove('show');
+  };
+})();
+</script>
+</body>
+</html>
